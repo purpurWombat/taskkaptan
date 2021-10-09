@@ -1,8 +1,13 @@
 import 'dart:html';
 import 'dart:math';
+import 'package:taskkaptan/models/dummydaten.dart';
 
+import 'models/task.dart';
+import 'models/workspace.dart';
+import 'Ui/taskpage.dart';
 import 'package:flutter/material.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
 void main() {
   runApp(MyApp());
 }
@@ -26,6 +31,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: TaskHome(),
+      navigatorKey: navigatorKey,
     );
   }
 }
@@ -36,6 +42,38 @@ class TaskHome extends StatefulWidget {
 }
 
 class _TaskHomeState extends State<TaskHome> {
+  List<Workspace> wsList = [];
+
+  void addWorkspaceIcon(String titelWs) {
+    setState(() {
+      Workspace wsneu = Workspace(
+          wsIcon: Icon(
+            Icons.access_alarm,
+          ),
+          wsTitel: titelWs);
+      wsList.add(wsneu);
+    });
+    Navigator.of(context).pop();
+  }
+
+  void addWorkspace() {
+    // final rootContext =
+    //     context.findRootAncestorStateOfType<NavigatorState>().context;
+    showDialog<AlertDialog>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: TextField(
+              onSubmitted: addWorkspaceIcon,
+            ),
+          );
+        });
+  }
+
+  void showWSOverview() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,41 +160,72 @@ class _TaskHomeState extends State<TaskHome> {
           ],
         ),
       ),
-      drawer: Container(
-        width: 200.0,
-        child: Drawer(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 50.0, //ohne width gibt es einen fehler
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    IconButton(icon: Icon(Icons.home), onPressed: () {}),
-                    Divider(),
-                    Divider(),
-                    IconButton(icon: Icon(Icons.add), onPressed: () {}),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  color: Colors.red,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text("ok")],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      drawer: buildDrawer(),
       floatingActionButton: FloatingActionButton(
         child: IconButton(icon: Icon(Icons.add), onPressed: () => print("ok")),
       ),
     );
+  }
+
+  Widget buildDrawer() => DrawerWidget();
+}
+
+class DrawerWidget extends StatefulWidget {
+  @override
+  _DrawerWidgetState createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends State<DrawerWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 200.0,
+      child: Drawer(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              children: [
+                Container(
+                  width: 50.0, //ohne width gibt es einen fehler
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      IconButton(icon: Icon(Icons.home), onPressed: () {}),
+                      Divider(),
+                      Divider(),
+                      IconButton(icon: Icon(Icons.add), onPressed: () => {}),
+                    ],
+                  ),
+                ),
+                IconButton(icon: Icon(Icons.add), onPressed: () => {}),
+              ],
+            ),
+            Container(width: 100.0, child: buildDrawerWS(context)),
+            Expanded(
+              child: Container(
+                color: Colors.red,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [Text("ok")],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildDrawerWS(BuildContext context) {
+    List<Workspace> allWSlist = DummyWS().getWS();
+    return Column(
+        children: allWSlist
+            .map((e) => ListTile(
+                    title: Text(
+                  e.wsTitel,
+                )))
+            .toList());
   }
 }
 
@@ -202,111 +271,5 @@ class _TaskPageState extends State<TaskPage> {
         return;
       },
     ));
-  }
-}
-
-class Taskgen extends StatefulWidget {
-  @override
-  _TaskgenState createState() => _TaskgenState();
-}
-
-class _TaskgenState extends State<Taskgen> {
-  // final items = List<String>.generate(20, (i) => 'Item ${i + 1}');
-  Map<String, String> tasks = {"1": "Task1", "2": "Task2"};
-
-  void addTaskTile(String item) {
-    setState(() {
-      tasks[item] = "ok";
-    });
-    Navigator.of(context).pop();
-  }
-
-  void deleteTask(String key) {
-    setState(() {
-      tasks.remove(key);
-    });
-  }
-
-  void addTask() {
-    showDialog<AlertDialog>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: TextField(
-              onSubmitted: addTaskTile,
-            ),
-          );
-        });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.builder(
-          itemCount: tasks.length,
-          itemBuilder: (context, index) {
-            String key = tasks.keys.elementAt(index);
-            print(index);
-
-            return TaskTileCustom(key, tasks[key], () => deleteTask(key));
-          }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: addTask,
-        child: Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-// Dismissible(
-//               key: Key(item),
-//               child: ListTile(
-//                 leading: Checkbox(
-//                   value: false,
-//                 ),
-//                 title: Text(item),
-//                 subtitle: Text("okay"),
-//                 isThreeLine: true,
-//                 trailing: Icon(Icons.delete),
-//               ),
-//             );
-
-class TaskTileCustom extends StatefulWidget {
-  //TaskTileCustom({Key key, this.desc, this.deletetask}) : super(key: key);
-  TaskTileCustom(this.title, this.desc, this.deletetask);
-  String title;
-  String desc;
-  Function deletetask;
-
-  @override
-  _TaskTileCustomState createState() => _TaskTileCustomState();
-}
-
-class _TaskTileCustomState extends State<TaskTileCustom> {
-  String title;
-  String description;
-
-  @override
-  void updateTask(titleUpdate, descriptionUpdate) {
-    setState(() {
-      title = titleUpdate;
-      description = descriptionUpdate;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.red,
-      child: Row(
-        children: [
-          Column(
-            children: [Text(widget.title), Text(widget.desc)],
-          ),
-          IconButton(
-              icon: Icon(Icons.delete), onPressed: () => widget.deletetask())
-        ],
-      ),
-    );
   }
 }
