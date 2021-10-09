@@ -5,6 +5,7 @@ import 'package:taskkaptan/models/dummydaten.dart';
 import 'models/task.dart';
 import 'models/workspace.dart';
 import 'Ui/taskpage.dart';
+import 'package:taskkaptan/widgets/drawer_widget.dart';
 import 'package:flutter/material.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -42,38 +43,6 @@ class TaskHome extends StatefulWidget {
 }
 
 class _TaskHomeState extends State<TaskHome> {
-  List<Workspace> wsList = [];
-
-  void addWorkspaceIcon(String titelWs) {
-    setState(() {
-      Workspace wsneu = Workspace(
-          wsIcon: Icon(
-            Icons.access_alarm,
-          ),
-          wsTitel: titelWs);
-      wsList.add(wsneu);
-    });
-    Navigator.of(context).pop();
-  }
-
-  void addWorkspace() {
-    // final rootContext =
-    //     context.findRootAncestorStateOfType<NavigatorState>().context;
-    showDialog<AlertDialog>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: TextField(
-              onSubmitted: addWorkspaceIcon,
-            ),
-          );
-        });
-  }
-
-  void showWSOverview() {
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,15 +93,7 @@ class _TaskHomeState extends State<TaskHome> {
                 child: Column(
                   children: [
                     Text("HalloHome"),
-                    IconButton(
-                        icon: Icon(Icons.forward),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      KalenderPage()));
-                        }),
+                    IconButton(icon: Icon(Icons.forward), onPressed: () {}),
                   ],
                 ),
               ),
@@ -144,15 +105,7 @@ class _TaskHomeState extends State<TaskHome> {
                 child: Column(
                   children: [
                     Text("HalloTask"),
-                    IconButton(
-                        icon: Icon(Icons.forward),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      TaskPage()));
-                        }),
+                    IconButton(icon: Icon(Icons.forward), onPressed: () {}),
                   ],
                 ),
               ),
@@ -168,108 +121,4 @@ class _TaskHomeState extends State<TaskHome> {
   }
 
   Widget buildDrawer() => DrawerWidget();
-}
-
-class DrawerWidget extends StatefulWidget {
-  @override
-  _DrawerWidgetState createState() => _DrawerWidgetState();
-}
-
-class _DrawerWidgetState extends State<DrawerWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 200.0,
-      child: Drawer(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                Container(
-                  width: 50.0, //ohne width gibt es einen fehler
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      IconButton(icon: Icon(Icons.home), onPressed: () {}),
-                      Divider(),
-                      Divider(),
-                      IconButton(icon: Icon(Icons.add), onPressed: () => {}),
-                    ],
-                  ),
-                ),
-                IconButton(icon: Icon(Icons.add), onPressed: () => {}),
-              ],
-            ),
-            Container(width: 100.0, child: buildDrawerWS(context)),
-            Expanded(
-              child: Container(
-                color: Colors.red,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [Text("ok")],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildDrawerWS(BuildContext context) {
-    List<Workspace> allWSlist = DummyWS().getWS();
-    return Column(
-        children: allWSlist
-            .map((e) => ListTile(
-                    title: Text(
-                  e.wsTitel,
-                )))
-            .toList());
-  }
-}
-
-class KalenderPage extends StatefulWidget {
-  @override
-  _KalenderPageState createState() => _KalenderPageState();
-}
-
-class _KalenderPageState extends State<KalenderPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: Column(
-          children: [
-            Text("KalenderPage"),
-            IconButton(
-                icon: Icon(Icons.backspace),
-                onPressed: () {
-                  Navigator.pop(context);
-                })
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class TaskPage extends StatefulWidget {
-  @override
-  _TaskPageState createState() => _TaskPageState();
-}
-
-class _TaskPageState extends State<TaskPage> {
-  var tasklist = ["Task1", "Task2", "Task3"];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: ListView.builder(
-      itemCount: tasklist.length,
-      itemBuilder: (context, i) {
-        return;
-      },
-    ));
-  }
 }
