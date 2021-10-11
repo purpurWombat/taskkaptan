@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:taskkaptan/models/workspace.dart';
 import 'package:taskkaptan/models/dummydaten.dart';
@@ -10,105 +8,93 @@ class DrawerWidget extends StatefulWidget {
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
-  List<Workspace> allWSlist = DummyWS().getWS();
-  Workspace aktuellChoosenWS;
-
-  @override
-  void initState() {
-    aktuellChoosenWS = allWSlist.first;
-  }
-
-  chooseWS(Workspace e) {
-    setState(() {
-      aktuellChoosenWS = e;
-    });
-  }
+  List<Workspace> allWSlist = DummyWS().getWS;
+  Workspace aktuellChoosenWS = DummyWS().getWS.first;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 200.0,
       child: Drawer(
-        child: Container(width: 100.0, child: buildDrawerWS(context)),
+        child: Container(
+            width: 100.0,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 50,
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: allWSlist.length,
+                      itemBuilder: (context, index) {
+                        return IconButton(
+                          icon: allWSlist[index].wsIcon,
+                          onPressed: () => setState(() {
+                            aktuellChoosenWS = allWSlist[index];
+                          }),
+                        );
+                      }),
+                ),
+                const SizedBox(
+                  width: 25,
+                ),
+                (() {
+                  if (aktuellChoosenWS.wsTitel == "HOME") {
+                    return Container(
+                      width: 100,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            child: Text(aktuellChoosenWS.wsTitel),
+                          )
+                        ],
+                      ),
+                    );
+                  } else if (aktuellChoosenWS.wsTitel == "ADD") {
+                    return Container(
+                      width: 100,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            child: Text(aktuellChoosenWS.wsTitel),
+                          ),
+                          Icon(Icons.add)
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      width: 100,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            height: 10.0,
+                            width: 10.0,
+                            color: Colors.orange,
+                          ),
+                          Container(
+                            child: Text(aktuellChoosenWS.wsTitel),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                }()),
+              ],
+            )),
       ),
     );
-  }
-
-  Widget buildDrawerWS(BuildContext context) {
-    return Row(
-      children: [
-        Column(
-          children: [
-            Container(
-              width: 50.00,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: allWSlist.length,
-                  itemBuilder: (context, index) {
-                    return Row(
-                      children: [
-                        IconButton(
-                          icon: allWSlist[index].wsIcon,
-                          onPressed: () => chooseWS(allWSlist[index]),
-                        ),
-                      ],
-                    );
-                  }),
-            ),
-          ],
-        ),
-        //overviewWSWidget(aktuellChoosenWS),
-        overviewWSfunktionChoose(aktuellChoosenWS),
-      ],
-    );
-  }
-
-  overviewWSfunktionChoose(Workspace ws) {
-    if (ws.wsTitel == "HOME") {
-      return overviewWSWidgetHome(ws);
-    } else if (ws.wsTitel == "ADD") {
-      return overviewWSWidgetADD(ws);
-    } else {
-      return overviewWSWidgetWS(ws);
-    }
-  }
-
-  Widget overviewWSWidgetHome(Workspace aktuellWS) {
-    return Expanded(
-        child: Column(
-      children: [
-        Container(
-          child: Text(aktuellWS.wsTitel),
-        )
-      ],
-    ));
-  }
-
-  Widget overviewWSWidgetADD(Workspace aktuellWS) {
-    return Expanded(
-        child: Column(
-      children: [
-        Container(
-          child: Text(aktuellWS.wsTitel),
-        ),
-        Icon(Icons.add)
-      ],
-    ));
-  }
-
-  Widget overviewWSWidgetWS(Workspace aktuellWS) {
-    return Expanded(
-        child: Column(
-      children: [
-        Container(
-          height: 10.0,
-          width: 10.0,
-          color: Colors.orange,
-        ),
-        Container(
-          child: Text(aktuellWS.wsTitel),
-        ),
-      ],
-    ));
   }
 }
